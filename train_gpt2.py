@@ -25,22 +25,24 @@ def main():
 
     num_epochs = 20
 
-    optimizer = torch.optim.AdamW(model.parameters())
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=0.1)
 
+    steps_per_epoch = 50
 
     for epoch in range(num_epochs):
+        for it in range(steps_per_epoch):
 
     
-        x, y = train_loader.next_batch()
-        x, y = x.to(device), y.to(device)
+            x, y = train_loader.next_batch()
+            x, y = x.to(device), y.to(device)
 
-        logits, loss = model(x, y)
-        print(epoch)
-        print(loss.item())
-        
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            logits, loss = model(x, y)
+            print(epoch)
+            print(loss.item())
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
     print("Training complete.")
 
@@ -53,7 +55,7 @@ def main():
 
 
     enc = tiktoken.get_encoding("gpt2")
-    tokens = enc.encode("Hello, I'm a large language model.")
+    tokens = enc.encode("In the middle of the experiment, the robot suddenly")
     tokens = torch.tensor(tokens, dtype=torch.long).unsqueeze(0)  # Add batch dimension
     tokens = tokens.repeat(num_return_sequences, 1)  # Repeat for num_return_sequences
     x = tokens.to(device)  # Move to the same device as the model
